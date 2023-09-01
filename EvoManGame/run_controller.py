@@ -3,7 +3,7 @@ import sys
 import numpy as np
 sys.path.insert(0, 'evoman')
 from environment import Environment
-from NN_arhitecture import player_controller
+from controllers import player_controller
 
 
 name_experiment = "EvoManGame"

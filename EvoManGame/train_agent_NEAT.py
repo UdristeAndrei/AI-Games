@@ -8,14 +8,11 @@ sys.path.insert(0, 'evoman')
 from environment import Environment
 from controllers import player_controller_NEAT
 
-nn_structure = [20, 10, 5]
-pop_size = 75
-nr_gen = 25
-p_crossover = 0.8
-p_mutation = 0.2
-enemy = 3
+nr_gen = 50
+enemy = 1
+headless = False
 
-if True:
+if headless:
     os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 experiment_name = 'results/train_neat'
@@ -35,7 +32,7 @@ env = Environment(experiment_name=experiment_name,
 
 
 def save_agent(agent, fitness):
-    pickle.dump(agent, open(experiment_name + f"/agent_enemy{enemy}_fitness-{int(fitness)}.pkl", "wb"))
+    pickle.dump(agent, open(experiment_name + f"/agent_enemy-{enemy}_fitness-{int(fitness)}.pkl", "wb"))
 
 
 def eval_genomes(genomes, config):
@@ -63,9 +60,10 @@ def main(config_path):
     pop.add_reporter(neat.StdOutReporter(True))
     pop.add_reporter(neat.StatisticsReporter())
 
-    winner = pop.run(eval_genomes, 25)
+    winner = pop.run(eval_genomes, nr_gen)
 
-    pickle.dump(winner, open(experiment_name + f"/agent_enemy{enemy}_winner.pkl", "wb"))
+    winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
+    pickle.dump(winner_net, open(experiment_name + f"/agent_enemy-{enemy}_winner.pkl", "wb"))
 
 
 if __name__ == "__main__":

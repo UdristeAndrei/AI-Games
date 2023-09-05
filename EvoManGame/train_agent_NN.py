@@ -12,8 +12,9 @@ nr_gen = 25
 p_crossover = 0.8
 p_mutation = 0.2
 enemy = 3
+headless = False
 
-if True:
+if headless:
     os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 experiment_name = 'results/train_nn'
@@ -113,7 +114,7 @@ def main():
             best_player = pop_fitness[best_fitness]
             best_player_fitness = best_fitness
 
-        if i % 5 == 0:
+        if (i+1) % 5 == 0:
             save_agent(i, best_player, best_player_fitness)
             best_player_fitness = -10
             best_player = 0

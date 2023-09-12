@@ -1,17 +1,11 @@
 from constants import *
-from utils import draw_window, draw_winner, handle_bullets
+from utils import draw_window, draw_winner, handle_bullets, init_player, det_winner
 from controllers import movement_red, movement_yellow
 
 
 def main():
-    red = pygame.Rect(700, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
-    yellow = pygame.Rect(100, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
-
-    red_bullets = list()
-    yellow_bullets = list()
-
-    red_health = 10
-    yellow_health = 10
+    red, red_health, red_bullets = init_player(10, HEIGHT-SPACESHIP_HEIGHT, WIDTH//2, WIDTH - SPACESHIP_WIDTH)
+    yellow, yellow_health, yellow_bullets = init_player(10, HEIGHT - SPACESHIP_HEIGHT, 0, WIDTH//2 - SPACESHIP_WIDTH)
 
     clock = pygame.time.Clock()
     run = True
@@ -50,14 +44,9 @@ def main():
 
         handle_bullets(yellow_bullets, red_bullets, yellow, red)
 
-        winner_text = ""
-        if red_health <= 0:
-            winner_text = "Yellow Wins!"
-        if yellow_health <= 0:
-            winner_text = "Red Wins!"
-
-        if winner_text:
-            draw_winner(winner_text)
+        winner = det_winner(red_health, yellow_health)
+        if winner:
+            draw_winner(winner)
             break
 
         draw_window(red, yellow, red_bullets, yellow_bullets, red_health, yellow_health)

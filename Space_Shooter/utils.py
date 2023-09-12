@@ -1,4 +1,12 @@
+import numpy as np
 from constants import *
+
+
+def init_player(health, max_height, min_width, max_width):
+    bullets = list()
+    player = pygame.Rect(np.random.randint(min_width, max_width), np.random.randint(0, max_height),
+                         SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
+    return player, health, bullets
 
 
 def draw_window(red, yellow, red_bullets, yellow_bullets, red_health, yellow_health):
@@ -50,3 +58,13 @@ def draw_winner(text):
 
     pygame.display.update()
     pygame.time.delay(5000)
+
+
+def det_winner(red_health, yellow_health):
+    winner_text = ""
+    if red_health <= 0:
+        winner_text = "Yellow Wins!"
+    if yellow_health <= 0:
+        winner_text = "Red Wins!"
+
+    return winner_text

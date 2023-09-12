@@ -6,7 +6,7 @@ from utils import draw_window, handle_bullets
 from controllers import movement_red_static, movement_yellow_ai
 
 
-def static_controller(red, yellow, yellow_bullets):
+def static_controller(red, yellow, yellow_bullets, red_bullets):
     act1, act2, act3, act4, act5 = 0, 0, 0, 0, 0
 
     bullets_front = [1 if b.x < red.x else 1 for b in yellow_bullets]
@@ -15,12 +15,19 @@ def static_controller(red, yellow, yellow_bullets):
     else:
         act2 = 1
 
-    if red.y <= yellow.y - 10:
-        act4 = 1
-    elif red.y >= yellow.y + 10:
-        act3 = 1
+    red_middle_height = red.y + SPACESHIP_HEIGHT // 2
 
-    if (red.y > yellow.y - 30) and (red.y < yellow.y + 30):
+    if red_middle_height > yellow.y + SPACESHIP_HEIGHT - 5:
+        act3 = 1
+    elif red_middle_height < yellow.y + 5:
+        act4 = 1
+
+    if red_bullets:
+
+        if red.x - red_bullets[-1].x > 75:
+            if (red_middle_height <= yellow.y + SPACESHIP_HEIGHT - 5) and (red_middle_height >= yellow.y + 5):
+                act5 = 1
+    else:
         act5 = 1
 
     return act1, act2, act3, act4, act5
@@ -69,10 +76,20 @@ def run_game(network):
         clock.tick()
         clock.tick_busy_loop()
 
-        r_act1, r_act2, r_act3, r_act4, r_act5 = static_controller(red, yellow, yellow_bullets)
+        r_act1, r_act2, r_act3, r_act4, r_act5 = static_controller(red, yellow, yellow_bullets, red_bullets)
         inputs = gen_inputs(red, yellow, red_bullets, red_health, yellow_health)
 
         y_act1, y_act2, y_act3, y_act4, y_act5 = controller_neat(inputs, network)
+
+        if (y_act5 == 1) and len(yellow_bullets) < MAX_BULLETS:
+            bullet = pygame.Rect(yellow.x + yellow.width, yellow.y + yellow.height // 2 - 2, 10, 5)
+            yellow_bullets.append(bullet)
+            BULLET_FIRE_SOUND.play()
+
+        if (r_act5 == 1) and len(red_bullets) < MAX_BULLETS:
+            bullet = pygame.Rect(red.x, red.y + red.height // 2 - 2, 10, 5)
+            red_bullets.append(bullet)
+            BULLET_FIRE_SOUND.play()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -86,16 +103,6 @@ def run_game(network):
             if event.type == YELLOW_HIT:
                 yellow_health -= 1
                 BULLET_HIT_SOUND.play()
-
-        if (y_act5 == 1) and len(yellow_bullets) < MAX_BULLETS:
-            bullet = pygame.Rect(yellow.x + yellow.width, yellow.y + yellow.height // 2 - 2, 10, 5)
-            yellow_bullets.append(bullet)
-            BULLET_FIRE_SOUND.play()
-
-        if (r_act5 == 1) and len(red_bullets) < MAX_BULLETS:
-            bullet = pygame.Rect(red.x, red.y + red.height // 2 - 2, 10, 5)
-            red_bullets.append(bullet)
-            BULLET_FIRE_SOUND.play()
 
         movement_yellow_ai(yellow, y_act1, y_act2, y_act3, y_act4)
         movement_red_static(red, r_act1, r_act2, r_act3, r_act4)

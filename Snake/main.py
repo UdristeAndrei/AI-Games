@@ -1,23 +1,17 @@
-from snake import Snake, gen_apple
+from snake import Snake
 from utils import draw_window
 from constants import *
 
 
-# def get_inputs(snake, apple):
-#     if
-#     print(snake.snake_body[0].snake_part.x, snake.snake_body[0].snake_part.y)
-#     print(snake.snake_body[0].last_movement)
-
-
 def main():
     run = True
+    time = 0
     snake = Snake()
-    apple = gen_apple(snake.snake_body[0].snake_part)
+    apple = snake.gen_apple()
     clock = pygame.time.Clock()
 
     while run:
         clock.tick(FPS)
-        # get_inputs(snake, apple)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
@@ -25,12 +19,17 @@ def main():
 
         key_pressed = pygame.key.get_pressed()
 
-        death_flag = snake.movement_snake(key_pressed[pygame.K_UP], key_pressed[pygame.K_DOWN],
-                               key_pressed[pygame.K_LEFT], key_pressed[pygame.K_RIGHT])
-
-        if death_flag:
-            break
+        time_now = pygame.time.get_ticks()
+        if time_now - time > TIME_STEP:
+            time = time_now
+            snake.move_snake(key_pressed[pygame.K_UP], key_pressed[pygame.K_DOWN],
+                             key_pressed[pygame.K_LEFT], key_pressed[pygame.K_RIGHT])
         apple = snake.eat_apple(apple)
+
+        death = snake.death()
+        if death:
+            break
+
         draw_window(snake, apple)
 
 

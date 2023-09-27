@@ -56,10 +56,13 @@ class Snake:
             self.snake_part.x = 0
 
     def eat_apple(self, apple):
+        apple_eaten = 0
         if self.snake_body[-1].colliderect(apple):
             apple = self.gen_apple()
             self.length += 1
-        return apple
+            apple_eaten = 1
+
+        return apple, apple_eaten
 
     def death(self):
         for body_part in self.snake_body[:-1]:

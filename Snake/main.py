@@ -3,7 +3,7 @@ from utils import draw_window
 from constants import *
 
 
-def main():
+def run_game():
     run = True
     time = 0
     snake = Snake()
@@ -34,4 +34,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run_game()
